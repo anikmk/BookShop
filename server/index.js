@@ -1,7 +1,8 @@
 const express = require('express');
 require('dotenv').config();
+const { ObjectId } = require('mongodb');
 const cors = require("cors");
-// var jwt = require('jsonwebtoken');
+var jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;;
@@ -52,8 +53,8 @@ const client = new MongoClient(uri, {
   }
 });
 
-// const userCollection = client.db("gajetShop").collection("users");
-// const productCollection = client.db("gajetShop").collection("products");
+const userCollection = client.db("bookshop").collection("users");
+const productCollection = client.db("bookshop").collection("products");
 
 async function run() {
   try {
@@ -75,34 +76,34 @@ app.get('/', (req, res) => {
 })
 
 // Genarate jwt token 
-// app.post('/jsonwebtoken',async(req,res) => {
-//   try{
-//     const userEmail = req.body;
-//     if(userEmail){
-//      const token = jwt.sign({userEmail},process.env.SECRET_TOKEN_KEY,{expiresIn:"5h"});
-//       res.send({token})
-//     }
-//   }
-//   catch(err){
-//     res.send({error:err})
-//   }
-// })
+app.post('/jsonwebtoken',async(req,res) => {
+  try{
+    const userEmail = req.body;
+    if(userEmail){
+     const token = jwt.sign({userEmail},process.env.SECRET_TOKEN_KEY,{expiresIn:"10d"});
+      res.send({token})
+    }
+  }
+  catch(err){
+    res.send({error:err})
+  }
+})
 // post request for single users
-// app.post('/users',async(req,res) => {
-//   try{
-//     const usersData = req.body;
-//     const query = {email:usersData.email};
-//     const existingUser = await userCollection.findOne(query);
-//     if(existingUser){
-//       return res.send({message:"user already store in db"})
-//     }
-//     else{
-//       const result = await userCollection.insertOne(usersData);
-//       res.send(result);
-//     }
-//   }
-//   catch(err){res.send({error:"internal server error"})}
-// })
+app.post('/users',async(req,res) => {
+  try{
+    const usersData = req.body;
+    const query = {email:usersData.email};
+    const existingUser = await userCollection.findOne(query);
+    if(existingUser){
+      return res.send({message:"user already store in db"})
+    }
+    else{
+      const result = await userCollection.insertOne(usersData);
+      res.send(result);
+    }
+  }
+  catch(err){res.send({error:"internal server error"})}
+})
 
 // for seller route
 // todo:add product for seller post route
@@ -114,21 +115,73 @@ app.get('/', (req, res) => {
 //   }
 //   catch(err){res.send({message:"internal server error"})}
 // })
+// get all users route
+app.get('/allUsers',async(req,res) => {
+  try{
+    const result = await userCollection.find().toArray();
+    res.send(result);
+  }
+  catch(err){
+    res.send({message:"internal server error"})
+  }
+})
+// get user by email route
+app.get("/logedInUser/:email", async(req,res) => {
+  try{
+    const email = req.params.email;
+    const result = await userCollection.findOne({email:email});
+    if(result){
 
+     return res.send(result);
+    } else {
+      return res.status(404).send({ message: "User not found" });
+    }
+  }
+  catch(err){res.send({message:"internal server error"})}
+})
 
-// app.get("/seller/product/:email", async(req,res) => {
-//   try{
-//     const email = req.params.email;
-//     const result = await userCollection.findOne({email:email});
-//     if(result){
+// delete user by admin
+app.delete('/deleteUser/:id',async(req,res) => {
+  try{
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const result = await userCollection.deleteOne(query);
+    if(result.deletedCount === 0){
+      return res.status(400).send({message:"user not found"})
+    }
+    res.send(result);
+  }
+  catch(err){res.send({message:"internal server error"})}
+})
 
-//      return res.send(result);
-//     } else {
-//       return res.status(404).send({ message: "User not found" });
-//     }
-//   }
-//   catch(err){res.send({message:"internal server error"})}
-// })
+// update user role route
+app.put('/updateUser/:role', async(req,res) => {
+  try{
+    const role = req.params.role;
+    let newRole;
+    if(role === 'buyer'){
+      newRole = 'seller';
+    }
+    else if(role === 'seller'){
+      newRole = 'admin'
+    }
+    else{
+      return res.send({message:"invalid role provided"})
+    }
+    const filter = {role: role};
+    const updateDoc = {
+      $set: {
+        role: newRole
+      },
+    };
+    const result = await userCollection.updateOne(filter,updateDoc)
+    if(result.matchedCount === 0){
+      res.send({message:"no role matched"})
+    }
+    res.send(result)
+  }
+  catch(err){res.send({message:"internal server error"})}
+}) 
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)

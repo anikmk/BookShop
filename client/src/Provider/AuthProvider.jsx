@@ -10,6 +10,7 @@ import {
     signOut, } from "firebase/auth";
 
 import { app } from "../firebase/firebase.config";
+import { getToken } from '../Api/userApi';
 
 export const AuthContext = createContext(null);
 const auth = getAuth(app);
@@ -38,9 +39,21 @@ const AuthProvider = ({children}) => {
 
 
     useEffect(() => {
-      const unSubscrive = onAuthStateChanged(auth,(currentUser) => {
+      const unSubscrive = onAuthStateChanged(auth, async(currentUser) => {
         console.log(currentUser);
         setUser(currentUser || null);
+        if(currentUser){
+         const result = await getToken(currentUser?.email)
+          if(result?.token){
+            localStorage.setItem("access_token",result?.token);
+            setLoading(false)
+          }
+       
+        }
+        else{
+          localStorage.removeItem("access_token")
+          setLoading(false)
+        }
 
       })
     
