@@ -8,13 +8,13 @@ export const addSellerProduct = async(addProductData) => {
     catch(err){console.log(err);}
 }
 
-// export const getAllProduct = async() => {
-//     try{
-//         const {data} = await axiosSecure.get('/getAllProduct');
-//         return data;
-//     }
-//     catch(err){console.log(err);}
-// }
+export const getAllProduct = async() => {
+    try{
+        const {data} = await axiosSecure.get('/allFeatureProduct');
+        return data;
+    }
+    catch(err){console.log(err);}
+}
 export const getProductByEmail = async(email) => {
     try{
         const {data} = await axiosSecure.get(`/getProductByEmail/${email}`)

@@ -2,23 +2,45 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router-dom";
 import { getSingleProduct } from "../../../Api/sellerApi";
 import Loader from "../Loader/Loader";
-
+import useAuth from "../../../hooks/useAuth";
+import { addToCartData } from "../../../Api/cart";
+import toast from 'react-hot-toast'
 const DetailsPage = () => {
+  const {user} = useAuth();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const id = params.get("id");
 
-  const { data: product, isLoading } = useQuery({
+  const { data: product, isLoading,refetch } = useQuery({
     queryKey: [id, "product"],
     queryFn: async () => await getSingleProduct(id),
   });
 
-  if (isLoading) return <Loader />;
+ 
+    const handleAddToCart = async() => {
+      const cartData = {
+        email:user?.email,
+        bookName: product?.bookName,
+        img: product?.img,
+        category: product?.category,
+        price: product?.price,
+        brand:product?.brand,
+        stock: product?.stock,
+        description:product?.description
+      }
+      
+      const result = await addToCartData(cartData)
+      if(result?.insertedId){
+        toast.success("Book add to the cart")
+        refetch();
+      }
 
-  if (!product) {
-    return <div className="text-center text-gray-500">Product not found.</div>;
-  }
+    }
+    if (isLoading) return <Loader />;
 
+    if (!product) {
+      return <div className="text-center text-gray-500">Product not found.</div>;
+    }
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
       <div className="flex flex-col md:flex-row gap-6">
@@ -50,13 +72,13 @@ const DetailsPage = () => {
 
           {/* Actions */}
           <div className="mt-6 flex gap-4">
-            <button className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition">
+            <button onClick={handleAddToCart} className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition">
               Add to Cart
             </button>
             <button className="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-md hover:bg-gray-200 transition">
               Wishlist
             </button>
-            <Link to={'/productPag4'}><button className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-md hover:bg-gray-200 transition">
+            <Link to={'/productPage'}><button className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-md hover:bg-gray-200 transition">
               Back to Products
             </button></Link>
           </div>

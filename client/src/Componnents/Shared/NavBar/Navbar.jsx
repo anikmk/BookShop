@@ -6,11 +6,16 @@ import { TiShoppingCart } from "react-icons/ti";
 import { useQuery } from "@tanstack/react-query";
 import { getUserByEmail } from "../../../Api/userApi";
 import Loader from "../Loader/Loader";
+import { getCartDataByEmail } from "../../../Api/cart";
 const Navbar = () => {
   const {user} = useAuth();
   const {data:userData,isLoading} = useQuery({
     queryKey:[user?.email,"userData"],
     queryFn:async()=>await getUserByEmail(user?.email)
+  })
+  const {data:cart} = useQuery({
+    queryKey:[user?.email,'cart'],
+    queryFn:async() => await getCartDataByEmail(user?.email)
   })
   if(isLoading) return <Loader />
     return (
@@ -55,8 +60,14 @@ const Navbar = () => {
       {
         userData?.role === 'buyer' && 
         <>
-         <div className="mr-10 text-3xl"><TiShoppingCart /></div>
-        <div className="mr-10 text-lg">Wishlist</div>
+         <div className="mr-10 text-3xl relative">
+          <Link to={'/cart'}><TiShoppingCart /></Link>
+          <div className="absolute -top-4 -right-2 text-green-900 font-medium text-xl">{cart?.length}</div>
+         </div>
+         <div className="mr-10 text-2xl relative">
+          <Link to={'/wishlist'}>Wishlist</Link>
+          <div className="absolute -top-4 -right-2 text-green-900 font-medium text-xl">1</div>
+         </div>
         </>
       }
 

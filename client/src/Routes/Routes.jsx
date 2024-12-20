@@ -15,6 +15,8 @@ import AdminRoute from "./PrivetRoutes/AdminRoute";
 import ManageAllUsers from "../Layouts/Dashboard/Admin/ManageAllUsers";
 import EditPage from "../Layouts/Dashboard/Seller/EditPage";
 import DetailsPage from "../Componnents/Shared/DetailsPage/DetailsPage";
+import Cart from "../Componnents/Shared/NavBar/Cart/Cart";
+import WishList from "../Componnents/Shared/NavBar/WishList/WishList";
 
 export const router = createBrowserRouter([
     {
@@ -32,6 +34,14 @@ export const router = createBrowserRouter([
             {
                 path:'/detailsPage',
                 element:<DetailsPage />
+            },
+            {
+                path:'/cart',
+                element:<Cart />
+            },
+            {
+                path:'/wishlist',
+                element:<WishList />
             },
             {
                 path:'/aboutPage',

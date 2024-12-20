@@ -3,9 +3,9 @@ import productImg from '../../../src/assets/slider/12.jpg'
 import DynamicHeroSection from '../../Componnents/Shared/DynamicHeroSection/DynamicHeroSection';
 import { useQuery } from "@tanstack/react-query";
 import { getProductFilterData } from '../../Api/productApi';
-import Loader from '../../Componnents/Shared/Loader/Loader';
 import Container from '../../Componnents/Shared/Container/Container';
 import ProductCard from './ProductCard';
+import Heading from '../../Componnents/Shared/Heading/Heading';
 const ProductPage = () => {
     const [category, setCategory] = useState('');
     const [searchText, setSearchText] = useState('');
@@ -24,8 +24,6 @@ const ProductPage = () => {
         queryKey: ['filterData',category,searchText,sorting,brand],
         queryFn: async () => await getProductFilterData(category,searchText,sorting,brand),
       })
-      if(isLoading)return <Loader />
-      console.log(filterData)
 
     return <div>
         <DynamicHeroSection img={productImg} pageTitle={'product page'}/>
@@ -75,9 +73,9 @@ const ProductPage = () => {
         </div>
 
         {/* all product render */}
-        <div className='mt-52 mb-10 z-10'>
+        <div className='md:mt-52 mt-60 mb-10 z-10'>
             <Container>
-            <div className='text-center mb-10'>product</div>
+            <Heading heading={'choice your book and read'} subHeading={'Just for you'}/>
                 <div>
                     <div className='grid grid-cols-1 md:grid-cols-4 place-items-center place-content-center gap-5'>
                         {
