@@ -13,7 +13,7 @@ const DropDownMenu = () => {
         
     }
     return(
-<ul className="menu menu-horizontal px-1">
+<ul className="menu menu-horizontal px-1 z-20">
       <li>
         <details>
           <summary><img className='w-10' src={userImage} alt="" /></summary>

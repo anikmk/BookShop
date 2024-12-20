@@ -3,8 +3,16 @@ import DropDownMenu from "./DropDownMenu";
 import NavLogo from "./NavLogo";
 import { Link } from "react-router-dom";
 import { TiShoppingCart } from "react-icons/ti";
+import { useQuery } from "@tanstack/react-query";
+import { getUserByEmail } from "../../../Api/userApi";
+import Loader from "../Loader/Loader";
 const Navbar = () => {
   const {user} = useAuth();
+  const {data:userData,isLoading} = useQuery({
+    queryKey:[user?.email,"userData"],
+    queryFn:async()=>await getUserByEmail(user?.email)
+  })
+  if(isLoading) return <Loader />
     return (
         <>
         <div className="navbar bg-base-200 px-2 md:px-14">
@@ -44,7 +52,14 @@ const Navbar = () => {
     </ul>
   </div>
   <div className="navbar-end">
-    <div className="mr-10 text-3xl"><TiShoppingCart /></div>
+      {
+        userData?.role === 'buyer' && 
+        <>
+         <div className="mr-10 text-3xl"><TiShoppingCart /></div>
+        <div className="mr-10 text-lg">Wishlist</div>
+        </>
+      }
+
     {
       user? <DropDownMenu /> : <Link to={"/signIn"}><button>Log In</button></Link>
     }

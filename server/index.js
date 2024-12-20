@@ -182,7 +182,93 @@ app.put('/updateUser/:role', async(req,res) => {
   }
   catch(err){res.send({message:"internal server error"})}
 }) 
+// seller route here:
+app.post('/addSellerProduct',async(req,res) => {
+  try{
+    const addProductData = req.body;
+    const result = await productCollection.insertOne(addProductData);
+    res.send(result);
+  }
+  catch(err){res.send({message:"internal server error"})}
+})
+// get all product: 
+app.get('/product/search',async(req,res) => {
+  try {
+    const { category, searchText, sorting,brand } = req.query;
+    console.log(category,searchText);
+    const filter = {};
 
+    if (category) {
+        filter.category = category;
+    }
+    if (brand) {
+        filter.brand = brand;
+    }
+    if (searchText) {
+        filter.bookName = { $regex: searchText, $options: "i" };
+    }
+    let sortCriteria = {};
+    switch (sorting) {
+        case 'lowToHigh':
+            sortCriteria = { price: 1 };
+            break;
+        case 'highToLow':
+            sortCriteria = { price: -1 };
+            break;
+        default:
+            sortCriteria = {};
+    }
+    const result = await productCollection.find(filter).sort(sortCriteria).toArray();
+    res.send(result);
+} 
+catch (err) {
+    res.send({message:"internal server error"}) 
+    }
+})
+// get product by email:
+app.get('/getProductByEmail/:email', async(req,res) => {
+  try{
+      const email = req.params.email;
+      const query = {sellerEmail: email};
+      const result = await productCollection.find(query).toArray();
+      res.send(result)
+  }
+  catch(err){res.send({message:"internal server error"})}
+})
+// get signle product:
+app.get('/getSingleProduct/:id',async(req,res) => {
+  try{
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const result = await productCollection.findOne(query);
+    res.send(result)
+  }
+  catch(err){res.send({message:"internal server error"})}
+})
+// update product Data:
+app.put('/updateProducts/:id', async(req,res) => {
+  try{
+    const id = req.params.id;
+    const updateData = req.body;
+    console.log(id,updateData);
+    const filter = {_id: new ObjectId(id)};
+    const updateDoc = {$set: updateData};
+    const result = await productCollection.updateOne(filter,updateDoc);
+    res.send(result)
+    
+  }
+  catch(err){res.send({message:"internal server error"})}
+})
+// delete single product:
+app.delete('/deleteProduct/:id',async(req,res) => {
+  try{
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const result = await productCollection.deleteOne(query);
+    res.send(result);
+  }
+  catch(err){res.send({message:"internal server error:"})}
+})
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })

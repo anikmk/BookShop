@@ -21,7 +21,7 @@ const ManageAllUsers = () => {
      <TableRow />
     </tbody>
   </table>
-</div>
+        </div>
     </>
 }
 export default ManageAllUsers;

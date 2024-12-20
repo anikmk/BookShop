@@ -13,6 +13,8 @@ import AddProduct from "../Layouts/Dashboard/Seller/AddProduct";
 import MyProduct from "../Layouts/Dashboard/Seller/MyProduct";
 import AdminRoute from "./PrivetRoutes/AdminRoute";
 import ManageAllUsers from "../Layouts/Dashboard/Admin/ManageAllUsers";
+import EditPage from "../Layouts/Dashboard/Seller/EditPage";
+import DetailsPage from "../Componnents/Shared/DetailsPage/DetailsPage";
 
 export const router = createBrowserRouter([
     {
@@ -26,6 +28,10 @@ export const router = createBrowserRouter([
             {
                 path:'/productPage',
                 element:<ProductPage />
+            },
+            {
+                path:'/detailsPage',
+                element:<DetailsPage />
             },
             {
                 path:'/aboutPage',
@@ -56,6 +62,10 @@ export const router = createBrowserRouter([
             {
                 path:'myProduct',
                 element:<SellerRoute><MyProduct /></SellerRoute>
+            },
+            {
+                path:'editPage',
+                element:<EditPage />
             },
             {
                 path:'manageAllUsers',
