@@ -13,7 +13,6 @@ const Cart = () => {
       })
       refetch()
       if(isLoading) return <Loader />
-      console.log(data);
     return <div>
          <div className="max-w-4xl mx-auto p-6">
           <h2 className="text-center"><span className="text-lg font-medium ">Wellcome to</span><NavLogo text1={'Book'} text2={'Shop'}/> </h2>

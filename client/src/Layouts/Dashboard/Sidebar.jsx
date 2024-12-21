@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom"
 import useAuth from "../../hooks/useAuth";
-import { getAllUsers, getUserByEmail } from "../../Api/userApi";
+import { getUserByEmail } from "../../Api/userApi";
 import Loader from "../../Componnents/Shared/Loader/Loader";
 
 
 const Sidebar = () =>{
-    const {user} = useAuth();
+    const {user,logOut} = useAuth();
     const {data:userData,isLoading} = useQuery({
         queryKey:["userData",user?.email],
         queryFn:async()=>await getUserByEmail(user?.email)
@@ -15,7 +15,9 @@ const Sidebar = () =>{
     //     queryKey:[user,"userData"],
     //     queryFn:async()=>await getAllUsers()
     // })
-    console.log(userData);
+    const handleLogOut = () => {
+        logOut();
+    }
     if(isLoading){
         return <Loader />
     }
@@ -35,7 +37,7 @@ const Sidebar = () =>{
             </>
         }
         <li><Link to={"/"}>Home</Link></li>
-        <li><Link>Logout</Link></li>
+        <li onClick={handleLogOut}><Link>Logout</Link></li>
     </ul>
    </div>
     </>

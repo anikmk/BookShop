@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserByEmail } from "../../../Api/userApi";
 import Loader from "../Loader/Loader";
 import { getCartDataByEmail } from "../../../Api/cart";
+import { getWishListDataByEmail } from "../../../Api/wishList";
 const Navbar = () => {
   const {user} = useAuth();
   const {data:userData,isLoading} = useQuery({
@@ -17,6 +18,10 @@ const Navbar = () => {
     queryKey:[user?.email,'cart'],
     queryFn:async() => await getCartDataByEmail(user?.email)
   })
+  const {data: data,} = useQuery({
+        queryKey:[user?.email,"cartData"],
+        queryFn:async()=> await getWishListDataByEmail(user?.email)
+      })
   if(isLoading) return <Loader />
     return (
         <>
@@ -66,7 +71,7 @@ const Navbar = () => {
          </div>
          <div className="mr-10 text-2xl relative">
           <Link to={'/wishlist'}>Wishlist</Link>
-          <div className="absolute -top-4 -right-2 text-green-900 font-medium text-xl">1</div>
+          <div className="absolute -top-4 -right-2 text-green-900 font-medium text-xl">{data?.length}</div>
          </div>
         </>
       }

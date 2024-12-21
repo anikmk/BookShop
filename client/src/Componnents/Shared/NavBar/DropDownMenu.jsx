@@ -19,7 +19,7 @@ const DropDownMenu = () => {
           <summary><img className='w-10' src={userImage} alt="" /></summary>
           <ul className="p-2">
             <li><Link to={"/dashboard"}>Dashboard</Link></li>
-            <li><a onClick={handleLogout}>Log Out</a></li>
+            <li className='bg-red-300 rounded-lg'><a onClick={handleLogout}>Log Out</a></li>
           </ul>
         </details>
       </li>

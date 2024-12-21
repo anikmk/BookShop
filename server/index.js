@@ -56,6 +56,7 @@ const client = new MongoClient(uri, {
 const userCollection = client.db("bookshop").collection("users");
 const productCollection = client.db("bookshop").collection("products");
 const cartCollection = client.db("bookshop").collection("carts");
+const wishListCollection = client.db("bookshop").collection("wishLists");
 
 async function run() {
   try {
@@ -195,7 +196,7 @@ app.post('/addSellerProduct',async(req,res) => {
 // get all product
 app.get('/allFeatureProduct',async(req,res) => {
   try{
-    const result = await productCollection.find().toArray();
+    const result = await productCollection.find().limit(8).toArray();
     res.send(result);
   }
   catch(err){res.send({message:"internal server error"})}
@@ -295,6 +296,35 @@ app.get('/getCartDataByEmail/:email',async(req,res) => {
     const query = {email: email};
     const result = await cartCollection.find(query).toArray();
     res.send(result)
+  }
+  catch(err){res.send({message:"internal server error"})}
+})
+// wishList route here:
+app.post('/addToWishListData',async(req,res) => {
+  try{
+    const cartData = req.body;
+    const result = await wishListCollection.insertOne(cartData);
+    res.send(result)
+  }
+  catch(err){res.send({message:"internal server error"})}
+})
+// get wishList data by email:
+app.get('/getWishDataByEmail/:email',async(req,res) => {
+  try{
+    const email = req.params.email;
+    const query = {email: email};
+    const result = await wishListCollection.find(query).toArray();
+    res.send(result)
+  }
+  catch(err){res.send({message:"internal server error"})}
+})
+// get category wise data
+app.get('/productCategory/:category',async(req,res) => {
+  try{
+    const category = req.params.category;
+    const filter = {category:category};
+    const result = await productCollection.find(filter).toArray();
+    res.send(result);
   }
   catch(err){res.send({message:"internal server error"})}
 })

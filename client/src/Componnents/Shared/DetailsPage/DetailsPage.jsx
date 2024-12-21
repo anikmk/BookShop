@@ -5,6 +5,7 @@ import Loader from "../Loader/Loader";
 import useAuth from "../../../hooks/useAuth";
 import { addToCartData } from "../../../Api/cart";
 import toast from 'react-hot-toast'
+import { addToWishListData } from "../../../Api/wishList";
 const DetailsPage = () => {
   const {user} = useAuth();
   const location = useLocation();
@@ -36,6 +37,26 @@ const DetailsPage = () => {
       }
 
     }
+    const handleWishList = async() => {
+      const cartData = {
+        email:user?.email,
+        bookName: product?.bookName,
+        img: product?.img,
+        category: product?.category,
+        price: product?.price,
+        brand:product?.brand,
+        stock: product?.stock,
+        description:product?.description
+      }
+      
+      const result = await addToWishListData(cartData)
+      if(result?.insertedId){
+        toast.success("Your book save to the wishlist")
+        refetch();
+      }
+
+    }
+
     if (isLoading) return <Loader />;
 
     if (!product) {
@@ -75,7 +96,7 @@ const DetailsPage = () => {
             <button onClick={handleAddToCart} className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition">
               Add to Cart
             </button>
-            <button className="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-md hover:bg-gray-200 transition">
+            <button onClick={handleWishList} className="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-md hover:bg-gray-200 transition">
               Wishlist
             </button>
             <Link to={'/productPage'}><button className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-md hover:bg-gray-200 transition">
